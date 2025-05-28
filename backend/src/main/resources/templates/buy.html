@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head th:replace="fragments/commons::head"></head>
+<body style="background-color: #c8dcef; color: #212529;">
+<header th:replace="fragments/commons::header"></header>
+<div class="container mt-5">
+    <h2 class="mb-4">Buy Cryptocurrency</h2>
+
+    <div class="alert alert-info container">
+        <div class="row">
+            <div class="col fs-5">Current Balance: <strong fs-5>$10,250.00</strong></div>
+            <div class="col fs-5">Quantity Owned: <strong fs-5>2</strong></div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <label class="form-label fs-5">Cryptocurrency:</label>
+            <div class="bg-white rounded pt-2 pb-2 ps-2 fs-5">Bitcoin</div>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label fs-5">Current Price:</label>
+            <div class="form-control-plaintext fs-5">$27,000.00</div>
+        </div>
+    </div>
+
+    <form method="post" action="/trade">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="quantity" class="form-label fs-5">Quantity:</label>
+                <input type="number" class="form-control fs-5" id="quantity" name="quantity" step="any" min="0.0001" required>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-success mt-2 rounded-pill fs-5 ps-3 pe-3">Buy</button>
+    </form>
+</div>
+</body>
+</html>

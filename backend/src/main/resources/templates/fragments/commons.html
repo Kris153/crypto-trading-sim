@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.w3.org/1999/xhtml"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Crypto Trading Simulation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/css/typografy.css">
+</head>
+<body>
+
+<header>
+    <nav class="navbar navbar-expand-md bg-body-tertiary">
+        <div class="container pt-3 pb-5">
+            <a th:href="@{/}" class="navbar-brand me-5">Crypto Trading Simulation</a>
+            <button class="navbar-toggler" data-bs-toggle="collapse"
+                    data-bs-target="#nav" aria-controls="nav" aria-label="Expand Navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-start ps-5 ms-3" id="nav">
+                <ul class="navbar-nav">
+                    <li class="nav-item pt-2">
+                        <a th:href="@{/}" class="nav-link fs-5 ps-5 ms-3" >Home</a>
+                    </li>
+                    <li class="nav-item ms-3 pt-2" sec:authorize="!isAuthenticated()">
+                        <a th:href="@{/login}" class="nav-link fs-5" >Login</a>
+                    </li>
+                    <li class="nav-item ms-3 pt-2 me-5" sec:authorize="!isAuthenticated()">
+                        <a th:href="@{/register}" class="nav-link fs-5" >Register</a>
+                    </li>
+                    <li sec:authorize="isAuthenticated()" class="nav-item ms-3 me-5 pt-2 ">
+
+                    </li>
+                    <li class="nav-item ms-5 pt-3">
+                        <a th:href="@{/profile}">
+                            <svg  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"  width="40" height="40"><defs><style>.cls-3{fill:#6fabe6}.cls-4{fill:#82bcf4}</style></defs><g id="User_profile" data-name="User profile"><path d="M47 24A23 23 0 1 1 12.81 3.91 23 23 0 0 1 47 24z" style="fill:#374f68"/><path d="M47 24a22.91 22.91 0 0 1-8.81 18.09A22.88 22.88 0 0 1 27 45C5.28 45-4.37 17.34 12.81 3.91A23 23 0 0 1 47 24z" style="fill:#425b72"/><path class="cls-3" d="M39.2 35.39a19 19 0 0 1-30.4 0 17 17 0 0 1 10.49-8.73 8.93 8.93 0 0 0 9.42 0 17 17 0 0 1 10.49 8.73z"/><path class="cls-4" d="M39.2 35.39a19 19 0 0 1-4.77 4.49 19 19 0 0 1-15.13-1 7.08 7.08 0 0 1-.51-12.18c.1-.07 0-.05.5-.05a9 9 0 0 0 9.42 0 17 17 0 0 1 10.49 8.74z"/><path class="cls-3" d="M33 19a9 9 0 1 1-12.38-8.34A9 9 0 0 1 33 19z"/><path class="cls-4" d="M33 19a9 9 0 0 1-2.6 6.33c-9.13 3.74-16.59-7.86-9.78-14.67A9 9 0 0 1 33 19z"/></g></svg>
+                        </a>
+                    </li>
+                    <li sec:authorize="isAuthenticated()" class="nav-item ms-3 me-5 pt-2 ">
+                        <a class="nav-link fs-5" >Current balance: $2000</a>
+                    </li>
+                    <li sec:authorize="isAuthenticated()" class="nav-item ms-5 me-5 mt-3 text-center">
+                        <div></div>
+                        <form th:method="POST"
+                              th:action="@{/reset_balance}" class="text-center">
+                            <button class="btn btn-warning text-center">Reset balance</button>
+                        </form>
+                    </li>
+                    <li sec:authorize="isAuthenticated()" class="nav-item ms-5 mt-2">
+                        <form th:method="POST"
+                              th:action="@{/logout}">
+                            <input class="btn btn-link nav-link link-underline  link-underline-opacity-0 fs-5 text-center" type="submit" th:value="Logout"/>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>

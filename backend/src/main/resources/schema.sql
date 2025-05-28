@@ -1,0 +1,26 @@
+CREATE TABLE IF NOT EXISTS users (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    balance DECIMAL(19,4) NOT NULL DEFAULT 10000.00
+);
+
+CREATE TABLE IF NOT EXISTS holdings (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
+    crypto_symbol VARCHAR(10) NOT NULL,
+    amount DECIMAL(19,8) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS transactions (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
+    transaction_type ENUM('BUY', 'SELL') NOT NULL,
+    crypto_symbol VARCHAR(10) NOT NULL,
+    quantity DECIMAL(19,8) NOT NULL,
+    price_per_unit DECIMAL(19,8) NOT NULL,
+    transaction_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    balance_after DECIMAL(19,4) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
