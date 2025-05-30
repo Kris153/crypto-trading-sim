@@ -131,7 +131,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean resetBalance() throws SQLException {
-        User currentUser = getCurrentUser();
-        return false;
+        try{
+            User currentUser = getCurrentUser();
+            this.userRepository.updateUserBalance(currentUser.getId(), BigDecimal.valueOf(10000));
+            this.cryptoHoldingRepository.deleteHoldingsByUserId(currentUser.getId());
+            this.transactionRepository.deleteTransactionsByUserId(currentUser.getId());
+            return true;
+        }catch (Exception e){
+            return false;
+        }
     }
 }

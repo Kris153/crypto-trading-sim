@@ -118,4 +118,15 @@ public class CryptoHoldingRepositoryImpl implements CryptoHoldingRepository {
 
         return holdings;
     }
+
+    @Override
+    public void deleteHoldingsByUserId(Integer userId) throws SQLException {
+
+        String deleteHoldingsSql = "DELETE FROM holdings WHERE user_id = ?";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement deleteHoldingsStmt = connection.prepareStatement(deleteHoldingsSql)) {
+            deleteHoldingsStmt.setLong(1, userId);
+            deleteHoldingsStmt.executeUpdate();
+        }
+    }
 }

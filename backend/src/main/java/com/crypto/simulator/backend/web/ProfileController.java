@@ -5,10 +5,7 @@ import com.crypto.simulator.backend.service.TransactionService;
 import com.crypto.simulator.backend.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
@@ -25,7 +22,8 @@ public class ProfileController {
         this.userService = userService;
         this.transactionService = transactionService;
     }
-
+    @ModelAttribute("successfulReset")
+    private boolean addSuccessfulResetValueToModel(){return false;}
     @GetMapping("/profile")
     public String viewProfilePage(Model model) throws SQLException {
         model.addAttribute("cryptoHoldingsList", this.cryptoHoldingService.getCryptoHoldingsForUserById(this.userService.getCurrentUser().getId()));
@@ -38,8 +36,11 @@ public class ProfileController {
         return "profile";
     }
     @PostMapping("/reset_balance")
-    public String resetBalance() throws SQLException {
-        this.userService.resetBalance();
+    public String resetBalance(RedirectAttributes redirectAttributes) throws SQLException {
+        if(this.userService.resetBalance()){
+         redirectAttributes.addFlashAttribute("successfulReset", true);
+            return "redirect:/profile";
+        }
         return "redirect:/profile";
     }
 }

@@ -67,4 +67,14 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
         return transactions;
     }
+
+    @Override
+    public void deleteTransactionsByUserId(Integer userId) throws SQLException {
+        String deleteTransactionsSql = "DELETE FROM transactions WHERE user_id = ?";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement deleteTransactionsStmt = connection.prepareStatement(deleteTransactionsSql)) {
+            deleteTransactionsStmt.setLong(1, userId);
+            deleteTransactionsStmt.executeUpdate();
+        }
+    }
 }

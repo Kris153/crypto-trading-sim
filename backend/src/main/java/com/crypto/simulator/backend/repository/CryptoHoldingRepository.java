@@ -13,4 +13,5 @@ public interface CryptoHoldingRepository {
     void updateCryptoHoldings(Integer userId, String currencySymbol, BigDecimal amount) throws SQLException;
     BigDecimal getAmountOfCryptoForUserById(Integer userId, String currencySymbol) throws SQLException;
     List<CryptoHoldingForProfileDTO> getCryptoHoldingsForUserById(Integer userId) throws SQLException;
+    void deleteHoldingsByUserId(Integer userId) throws SQLException;
 }

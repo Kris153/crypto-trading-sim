@@ -8,4 +8,5 @@ import java.util.List;
 public interface TransactionRepository {
     void saveTransaction(Transaction transaction) throws SQLException;
     List<Transaction> getTransactionsForUserById(Integer userId) throws SQLException;
+    void deleteTransactionsByUserId(Integer userId) throws SQLException;
 }

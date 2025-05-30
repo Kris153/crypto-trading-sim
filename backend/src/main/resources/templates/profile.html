@@ -15,6 +15,10 @@
     <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="/css/typografy.css">
 </head>
+<div th:if="${successfulReset}" class="alert alert-success alert-dismissible text-center mb-0 rounded-0" role="alert">
+    You successfully reset your account!
+    <button class="btn-close" aria-label="close" data-bs-dismiss="alert"></button>
+</div>
 <body style="background-color: #c8dcef; color: #212529;">
 <div class="container mt-5">
     <div class="col mb-5">
@@ -58,7 +62,7 @@
             </thead>
             <tbody>
             <tr th:each="transaction : ${transactionsList}">
-                <td th:text="${#dates.format(transaction.timestamp, 'yyyy-MM-dd HH:mm:ss')}">0000-00-00 00:00</td>
+                <td th:text="${#temporals.format(transaction.timestamp, 'dd-MM-yyyy HH:mm:ss')}">0000-00-00 00:00</td>
                 <td>
                     <span th:if="${transaction.isBuy}" class="badge bg-danger">Buy</span>
                     <span th:unless="${transaction.isBuy}" class="badge bg-success">Sell</span>
@@ -78,77 +82,89 @@
             </tbody>
         </table>
         <script th:inline="javascript">
-  const krakenSymbols = {
-    "BTC/USD": "BTC",
-    "ETH/USD": "ETH",
-    "USDT/USD": "USDT",
-    "USDC/USD": "USDC",
-    "BNB/USD": "BNB",
-    "XRP/USD": "XRP",
-    "ADA/USD": "ADA",
-    "SOL/USD": "SOL",
-    "DOGE/USD": "DOGE",
-    "DOT/USD": "DOT",
-    "DAI/USD": "DAI",
-    "TRX/USD": "TRX",
-    "AVAX/USD": "AVAX",
-    "LTC/USD": "LTC",
-    "XLM/USD": "XLM",
-    "BCH/USD": "BCH",
-    "LINK/USD": "LINK",
-    "UNI/USD": "UNI",
-    "ALGO/USD": "ALGO",
-    "ATOM/USD": "ATOM"
-  };
+const krakenSymbols = {
+  "BTC/USD": "BTC",
+  "ETH/USD": "ETH",
+  "USDT/USD": "USDT",
+  "USDC/USD": "USDC",
+  "BNB/USD": "BNB",
+  "XRP/USD": "XRP",
+  "ADA/USD": "ADA",
+  "SOL/USD": "SOL",
+  "DOGE/USD": "DOGE",
+  "DOT/USD": "DOT",
+  "DAI/USD": "DAI",
+  "TRX/USD": "TRX",
+  "AVAX/USD": "AVAX",
+  "LTC/USD": "LTC",
+  "XLM/USD": "XLM",
+  "BCH/USD": "BCH",
+  "LINK/USD": "LINK",
+  "UNI/USD": "UNI",
+  "ALGO/USD": "ALGO",
+  "ATOM/USD": "ATOM"
+};
 
-  const symbolToKraken = {};
-  for (const [kraken, sym] of Object.entries(krakenSymbols)) {
-    symbolToKraken[sym] = kraken;
-  }
+const symbolToKraken = {};
+for (const [kraken, sym] of Object.entries(krakenSymbols)) {
+  symbolToKraken[sym] = kraken;
+}
 
-  const ws = new WebSocket("wss://ws.kraken.com/v2");
+const ws = new WebSocket("wss://ws.kraken.com/v2");
 
-  ws.onopen = () => {
-    const symbols = Array.from(document.querySelectorAll("tr[data-symbol]"))
-      .map(row => row.getAttribute("data-symbol"))
-      .filter(sym => symbolToKraken[sym])
-      .map(sym => symbolToKraken[sym]);
+ws.onopen = () => {
+  const symbols = Array.from(document.querySelectorAll("tr[data-symbol]"))
+    .map(row => row.getAttribute("data-symbol"))
+    .filter(sym => symbolToKraken[sym])
+    .map(sym => symbolToKraken[sym]);
 
-    ws.send(JSON.stringify({
-      method: "subscribe",
-      params: {
-        channel: "ticker",
-        symbol: symbols
-      }
-    }));
-  };
+  ws.send(JSON.stringify({
+    method: "subscribe",
+    params: {
+      channel: "ticker",
+      symbol: symbols
+    }
+  }));
+};
 
-  ws.onmessage = (event) => {
-    const msg = JSON.parse(event.data);
+ws.onmessage = (event) => {
+  const msg = JSON.parse(event.data);
 
-    if (msg.channel === "ticker" && Array.isArray(msg.data)) {
-      msg.data.forEach(ticker => {
-        const krakenSymbol = ticker.symbol;
-        const cryptoSymbol = krakenSymbols[krakenSymbol];
-        if (!cryptoSymbol) return;
+  if (
+    msg.channel === "ticker" &&
+    (msg.type === "snapshot" || msg.type === "update") &&
+    Array.isArray(msg.data)
+  ) {
+    msg.data.forEach(ticker => {
+      const krakenSymbol = ticker.symbol;
+      const cryptoSymbol = krakenSymbols[krakenSymbol];
+      if (!cryptoSymbol) return;
 
-        const row = document.querySelector(`tr[data-symbol="${cryptoSymbol}"]`);
-        if (!row) return;
+      const row = document.querySelector(`tr[data-symbol="${cryptoSymbol}"]`);
+      if (!row) return;
 
-        const quantityEl = row.querySelector(".quantity");
-        const priceEl = row.querySelector(".current-price");
-        const totalEl = row.querySelector(".total-value");
+      const quantityEl = row.querySelector(".quantity");
+      const priceEl = row.querySelector(".current-price");
+      const totalEl = row.querySelector(".total-value");
 
-        const quantity = parseFloat(quantityEl?.textContent || "0");
-        const price = ticker.last || ticker.ask || ticker.bid;
-        const priceNum = parseFloat(price).toFixed(2);
+      // Почистваме quantity от евентуални символи и го превръщаме в число
+      const quantityText = quantityEl?.textContent || "0";
+      const quantity = parseFloat(quantityText.replace(/[^0-9.-]+/g, ""));
+
+      // Вземаме цената и я конвертираме в число
+      const priceRaw = ticker.last || ticker.ask || ticker.bid;
+      const price = typeof priceRaw === "string" ? parseFloat(priceRaw) : priceRaw;
+
+      if (!isNaN(quantity) && !isNaN(price)) {
+        const priceNum = price.toFixed(2);
         const total = (quantity * price).toFixed(2);
 
         if (priceEl) priceEl.textContent = `$${priceNum}`;
         if (totalEl) totalEl.textContent = `$${total}`;
-      });
-    }
-  };
+      }
+    });
+  }
+};
 </script>
     </div>
 </div>
