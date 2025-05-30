@@ -41,7 +41,7 @@
                         </a>
                     </li>
                     <li sec:authorize="isAuthenticated()" class="nav-item ms-3 me-5 pt-2 ">
-                        <a class="nav-link fs-5" >Current balance: $2000</a>
+                        <a class="nav-link fs-5" >Current balance: $<span th:text="${#numbers.formatDecimal(currentBalance, 1, 2)}">0</span></a>
                     </li>
                     <li sec:authorize="isAuthenticated()" class="nav-item ms-5 me-5 mt-3 text-center">
                         <div></div>

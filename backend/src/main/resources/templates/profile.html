@@ -31,29 +31,13 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <td>Bitcoin</td>
-                <td>BTC</td>
-                <td>0.25</td>
-                <td>$27,000</td>
-                <td>$6,750</td>
-                <td><button class="btn btn-danger btn-sm">Sell</button></td>
-            </tr>
-            <tr>
-                <td>Ethereum</td>
-                <td>ETH</td>
-                <td>1.5</td>
-                <td>$1,800</td>
-                <td>$2,700</td>
-                <td><button class="btn btn-danger btn-sm">Sell</button></td>
-            </tr>
-            <tr>
-                <td>Cardano</td>
-                <td>ADA</td>
-                <td>100</td>
-                <td>$0.40</td>
-                <td>$40</td>
-                <td><button class="btn btn-danger btn-sm">Sell</button></td>
+            <tr th:each="holding : ${cryptoHoldingsList}" th:attr="data-symbol=${holding.cryptoSymbol}">
+                <td th:text="${holding.cryptoName}">Bitcoin</td>
+                <td th:text="${holding.cryptoSymbol}">BTC</td>
+                <td class="quantity" th:text="${#numbers.formatDecimal(holding.quantity, 1, 2)}">0.25</td>
+                <td class="current-price">$0,00</td>
+                <td class="total-value">$0,00</td>
+                <td><a th:href="@{/sell/{symbol}(symbol=${holding.cryptoSymbol})}" class="btn btn-danger btn-sm">Sell</a></td>
             </tr>
             </tbody>
         </table>
@@ -73,45 +57,99 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <td>2025-05-20 10:00</td>
-                <td><span class="badge bg-danger">Buy</span></td>
-                <td>Bitcoin (BTC)</td>
-                <td>0.1</td>
-                <td>$25,000</td>
-                <td class="text-danger">- $2,500</td>
-                <td>$7,500</td>
-            </tr>
-            <tr>
-                <td>2025-05-25 14:00</td>
-                <td><span class="badge bg-success">Sell</span></td>
-                <td>Bitcoin (BTC)</td>
-                <td>0.1</td>
-                <td>$26,000</td>
-                <td class="text-success">+ $2,600</td>
-                <td>$10,100</td>
-            </tr>
-            <tr>
-                <td>2025-05-26 09:30</td>
-                <td><span class="badge bg-danger">Buy</span></td>
-                <td>Ethereum (ETH)</td>
-                <td>1.5</td>
-                <td>$1,700</td>
-                <td class="text-danger">- $2,550</td>
-                <td>$7,550</td>
-            </tr>
-            <tr>
-                <td>2025-05-27 15:00</td>
-                <td><span class="badge bg-success">Sell</span></td>
-                <td>Ethereum (ETH)</td>
-                <td>1.5</td>
-                <td>$1,800</td>
-                <td class="text-success">+ $2,700</td>
-                <td>$10,250</td>
+            <tr th:each="transaction : ${transactionsList}">
+                <td th:text="${#dates.format(transaction.timestamp, 'yyyy-MM-dd HH:mm:ss')}">0000-00-00 00:00</td>
+                <td>
+                    <span th:if="${transaction.isBuy}" class="badge bg-danger">Buy</span>
+                    <span th:unless="${transaction.isBuy}" class="badge bg-success">Sell</span>
+                </td>
+                <td>
+                    <span th:text="${transaction.cryptoName}"></span>
+                    (<span th:text="${transaction.cryptoSymbol}"></span>)
+                </td>
+                <td th:text="${#numbers.formatDecimal(transaction.quantity, 1, 2)}">0</td>
+                <td th:text="${#numbers.formatDecimal(transaction.pricePerUnit, 1, 2)}">$0,000</td>
+                <td th:text="${transaction.isBuy ? '- $' + #numbers.formatDecimal(transaction.totalValue, 1, 2) : '+ $' + #numbers.formatDecimal(transaction.totalValue, 1, 2)}"
+                    th:classappend="${transaction.isBuy ? 'text-danger' : 'text-success'}">
+                    + $0,00
+                </td>
+                <td th:text="${#numbers.formatDecimal(transaction.balanceAfter, 1, 2)}">$000</td>
             </tr>
             </tbody>
         </table>
+        <script th:inline="javascript">
+  const krakenSymbols = {
+    "BTC/USD": "BTC",
+    "ETH/USD": "ETH",
+    "USDT/USD": "USDT",
+    "USDC/USD": "USDC",
+    "BNB/USD": "BNB",
+    "XRP/USD": "XRP",
+    "ADA/USD": "ADA",
+    "SOL/USD": "SOL",
+    "DOGE/USD": "DOGE",
+    "DOT/USD": "DOT",
+    "DAI/USD": "DAI",
+    "TRX/USD": "TRX",
+    "AVAX/USD": "AVAX",
+    "LTC/USD": "LTC",
+    "XLM/USD": "XLM",
+    "BCH/USD": "BCH",
+    "LINK/USD": "LINK",
+    "UNI/USD": "UNI",
+    "ALGO/USD": "ALGO",
+    "ATOM/USD": "ATOM"
+  };
 
+  const symbolToKraken = {};
+  for (const [kraken, sym] of Object.entries(krakenSymbols)) {
+    symbolToKraken[sym] = kraken;
+  }
+
+  const ws = new WebSocket("wss://ws.kraken.com/v2");
+
+  ws.onopen = () => {
+    const symbols = Array.from(document.querySelectorAll("tr[data-symbol]"))
+      .map(row => row.getAttribute("data-symbol"))
+      .filter(sym => symbolToKraken[sym])
+      .map(sym => symbolToKraken[sym]);
+
+    ws.send(JSON.stringify({
+      method: "subscribe",
+      params: {
+        channel: "ticker",
+        symbol: symbols
+      }
+    }));
+  };
+
+  ws.onmessage = (event) => {
+    const msg = JSON.parse(event.data);
+
+    if (msg.channel === "ticker" && Array.isArray(msg.data)) {
+      msg.data.forEach(ticker => {
+        const krakenSymbol = ticker.symbol;
+        const cryptoSymbol = krakenSymbols[krakenSymbol];
+        if (!cryptoSymbol) return;
+
+        const row = document.querySelector(`tr[data-symbol="${cryptoSymbol}"]`);
+        if (!row) return;
+
+        const quantityEl = row.querySelector(".quantity");
+        const priceEl = row.querySelector(".current-price");
+        const totalEl = row.querySelector(".total-value");
+
+        const quantity = parseFloat(quantityEl?.textContent || "0");
+        const price = ticker.last || ticker.ask || ticker.bid;
+        const priceNum = parseFloat(price).toFixed(2);
+        const total = (quantity * price).toFixed(2);
+
+        if (priceEl) priceEl.textContent = `$${priceNum}`;
+        if (totalEl) totalEl.textContent = `$${total}`;
+      });
+    }
+  };
+</script>
     </div>
 </div>
 

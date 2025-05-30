@@ -5,6 +5,7 @@ import com.crypto.simulator.backend.repository.UserRepository;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.Optional;
 
@@ -71,5 +72,36 @@ public class UserRepositoryImpl implements UserRepository {
         }
 
         return false;
+    }
+
+    @Override
+    public BigDecimal getCurrencyQuantityBySymbol(String symbol, User currentUser) throws SQLException {
+        String sql = "SELECT amount FROM holdings WHERE crypto_symbol = ? AND user_id = ?";
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, symbol);
+            stmt.setLong(2, currentUser.getId());
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                BigDecimal total = rs.getBigDecimal("amount");
+                return total != null ? total : BigDecimal.ZERO;
+            } else {
+                return BigDecimal.ZERO;
+            }
+        }
+    }
+
+    @Override
+    public void updateUserBalance(Integer userId, BigDecimal newBalance) throws SQLException {
+        String sql = "UPDATE users SET balance = ? WHERE id = ?";
+        try (Connection connection = dataSource.getConnection();
+                PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setBigDecimal(1, newBalance);
+            stmt.setLong(2, userId);
+            stmt.executeUpdate();
+        }
     }
 }

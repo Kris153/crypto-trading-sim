@@ -4,9 +4,10 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class Transaction {
-    private Long id;
-    private Long userId;
+    private Integer id;
+    private Integer userId;
     private String cryptoSymbol;
+    private String cryptoName;
     private LocalDateTime timestamp;
     private boolean isBuy;
     private BigDecimal quantity;
@@ -17,8 +18,28 @@ public class Transaction {
     public Transaction() {
     }
 
-    public Transaction(Long id, Long userId, String cryptoSymbol, LocalDateTime timestamp, boolean isBuy, BigDecimal quantity, BigDecimal pricePerUnit, BigDecimal totalValue, BigDecimal balanceAfter) {
+    public String getCryptoName() {
+        return this.cryptoName;
+    }
+
+    public void setCryptoName(String cryptoName) {
+        this.cryptoName = cryptoName;
+    }
+
+    public Transaction(Integer id, Integer userId, String cryptoSymbol, String cryptoName, LocalDateTime timestamp, boolean isBuy, BigDecimal quantity, BigDecimal pricePerUnit, BigDecimal totalValue, BigDecimal balanceAfter) {
         this.id = id;
+        this.userId = userId;
+        this.cryptoSymbol = cryptoSymbol;
+        this.cryptoName = cryptoName;
+        this.timestamp = timestamp;
+        this.isBuy = isBuy;
+        this.quantity = quantity;
+        this.pricePerUnit = pricePerUnit;
+        this.totalValue = totalValue;
+        this.balanceAfter = balanceAfter;
+    }
+
+    public Transaction(Integer userId, String cryptoSymbol, LocalDateTime timestamp, boolean isBuy, BigDecimal quantity, BigDecimal pricePerUnit, BigDecimal totalValue, BigDecimal balanceAfter) {
         this.userId = userId;
         this.cryptoSymbol = cryptoSymbol;
         this.timestamp = timestamp;
@@ -29,19 +50,19 @@ public class Transaction {
         this.balanceAfter = balanceAfter;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return this.id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public Long getUserId() {
+    public Integer getUserId() {
         return this.userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 

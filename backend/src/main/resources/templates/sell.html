@@ -3,29 +3,38 @@
 <head th:replace="fragments/commons::head"></head>
 <body style="background-color: #c8dcef; color: #212529;">
 <header th:replace="fragments/commons::header"></header>
+<div th:if="${!isQuantityPositive}" class="alert alert-danger alert-dismissible text-center mb-0 rounded-0" role="alert">
+    You cannot negative amount of crypto!
+    <button class="btn-close" aria-label="close" data-bs-dismiss="alert"></button>
+</div>
+<div th:if="${!hasEnoughQuantity}" class="alert alert-danger alert-dismissible text-center mb-0 rounded-0" role="alert">
+    You don't have enough quantity!
+    <button class="btn-close" aria-label="close" data-bs-dismiss="alert"></button>
+</div>
 <div class="container mt-5">
     <h2 class="mb-4">Sell Cryptocurrency</h2>
 
     <div class="alert alert-info container">
         <div class="row">
-            <div class="col fs-5">Current Balance: <strong fs-5>$10,250.00</strong></div>
-            <div class="col fs-5">Quantity Owned: <strong fs-5>2</strong></div>
+            <div class="col fs-5">Current Balance: $<strong fs-5 th:text="${#numbers.formatDecimal(currentBalance, 1, 2)}">0.00</strong></div>
+            <div class="col fs-5">Quantity Owned: <strong fs-5 th:text="${#numbers.formatDecimal(currencyQuantity, 1, 2)}">0</strong></div>
         </div>
     </div>
 
     <div class="row mb-4">
         <div class="col-md-6">
             <label class="form-label fs-5">Cryptocurrency:</label>
-            <div class="bg-white rounded pt-2 pb-2 ps-2 fs-5">Bitcoin</div>
+            <div class="bg-white rounded pt-2 pb-2 ps-2 fs-5" th:text="${currencyName}">Bitcoin</div>
         </div>
 
         <div class="col-md-6">
             <label class="form-label fs-5">Current Price:</label>
-            <div class="form-control-plaintext fs-5">$27,000.00</div>
+            <div class="form-control-plaintext fs-5" id="current-price">$0.00</div>
         </div>
     </div>
 
-    <form method="post" action="/trade">
+    <form th:method="POST" th:action="@{/sell/{symbol}(symbol=${currencySymbol})}">
+        <input type="hidden" name="currentPrice" th:value="${currentPrice}" id="price-input"/>
         <div class="row mb-3">
             <div class="col-md-6">
                 <label for="quantity" class="form-label fs-5">Quantity:</label>
@@ -34,6 +43,74 @@
         </div>
         <button type="submit" class="btn btn-danger mt-2 rounded-pill fs-5 ps-3 pe-3">Sell</button>
     </form>
+
 </div>
+<script th:inline="javascript">
+  const krakenSymbols = {
+    "BTC/USD": "BTC",
+    "ETH/USD": "ETH",
+    "USDT/USD": "USDT",
+    "USDC/USD": "USDC",
+    "BNB/USD": "BNB",
+    "XRP/USD": "XRP",
+    "ADA/USD": "ADA",
+    "SOL/USD": "SOL",
+    "DOGE/USD": "DOGE",
+    "DOT/USD": "DOT",
+    "DAI/USD": "DAI",
+    "TRX/USD": "TRX",
+    "AVAX/USD": "AVAX",
+    "LTC/USD": "LTC",
+    "XLM/USD": "XLM",
+    "BCH/USD": "BCH",
+    "LINK/USD": "LINK",
+    "UNI/USD": "UNI",
+    "ALGO/USD": "ALGO",
+    "ATOM/USD": "ATOM"
+  };
+
+  const selectedSymbol = /*[[${currencySymbol}]]*/ 'BTC';
+  const ws = new WebSocket("wss://ws.kraken.com/v2");
+
+  function updatePrice(price) {
+    const formattedPrice = `$${price}`;
+    const priceTextElement = document.getElementById("current-price");
+    const priceInputElement = document.getElementById("price-input");
+
+    if (priceTextElement) {
+      priceTextElement.textContent = formattedPrice;
+    }
+
+    if (priceInputElement) {
+      priceInputElement.value = price;
+    }
+  }
+
+  ws.onopen = () => {
+    const krakenKey = Object.keys(krakenSymbols).find(key => krakenSymbols[key] === selectedSymbol);
+    if (krakenKey) {
+      ws.send(JSON.stringify({
+        method: "subscribe",
+        params: {
+          channel: "ticker",
+          symbol: [krakenKey]
+        }
+      }));
+    }
+  };
+
+  ws.onmessage = (event) => {
+    const msg = JSON.parse(event.data);
+
+    if (msg.channel === "ticker" && (msg.type === "update" || msg.type === "snapshot") && Array.isArray(msg.data)) {
+      msg.data.forEach(ticker => {
+        const price = ticker.last || ticker.ask || ticker.bid;
+        if (price) {
+          updatePrice(price.toFixed(2));
+        }
+      });
+    }
+  };
+</script>
 </body>
 </html>

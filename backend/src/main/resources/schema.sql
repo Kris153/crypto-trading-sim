@@ -16,11 +16,12 @@ CREATE TABLE IF NOT EXISTS holdings (
 CREATE TABLE IF NOT EXISTS transactions (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     user_id BIGINT NOT NULL,
-    transaction_type ENUM('BUY', 'SELL') NOT NULL,
     crypto_symbol VARCHAR(10) NOT NULL,
+    transaction_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_buy BOOLEAN NOT NULL,
     quantity DECIMAL(19,8) NOT NULL,
     price_per_unit DECIMAL(19,8) NOT NULL,
-    transaction_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    total_value DECIMAL(19,8) NOT NULL,
     balance_after DECIMAL(19,4) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
