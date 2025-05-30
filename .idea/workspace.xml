@@ -4,15 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="74535c00-1900-499b-88d6-0305cddebc29" name="Changes" comment="Functionalities.">
+    <list default="true" id="74535c00-1900-499b-88d6-0305cddebc29" name="Changes" comment="Small fixes.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/crypto/simulator/backend/repository/CryptoHoldingRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/crypto/simulator/backend/repository/CryptoHoldingRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/crypto/simulator/backend/repository/TransactionRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/crypto/simulator/backend/repository/TransactionRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/crypto/simulator/backend/repository/impl/CryptoHoldingRepositoryImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/crypto/simulator/backend/repository/impl/CryptoHoldingRepositoryImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/crypto/simulator/backend/repository/impl/TransactionRepositoryImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/crypto/simulator/backend/repository/impl/TransactionRepositoryImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/crypto/simulator/backend/service/impl/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/crypto/simulator/backend/service/impl/UserServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/crypto/simulator/backend/web/ProfileController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/crypto/simulator/backend/web/ProfileController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/templates/profile.html" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/templates/profile.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/crypto/simulator/backend/web/HomeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/crypto/simulator/backend/web/HomeController.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,6 +54,9 @@
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="com.crypto.simulator.backend.config" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Documents\Trading212\crypto-trading-sim\backend\src\main\resources\templates" />
     </key>
   </component>
   <component name="RunManager">
@@ -112,7 +109,14 @@
       <option name="project" value="LOCAL" />
       <updated>1748609801557</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Small fixes.">
+      <created>1748612271108</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1748612271108</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -129,7 +133,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="First steps with the frontend. Implementing register, login and logout." />
     <MESSAGE value="Functionalities." />
-    <option name="LAST_COMMIT_MESSAGE" value="Functionalities." />
+    <MESSAGE value="Small fixes." />
+    <option name="LAST_COMMIT_MESSAGE" value="Small fixes." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

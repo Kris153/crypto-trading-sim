@@ -37,4 +37,9 @@ public class HomeController {
     public String viewLoginPage(Model model){
         return "login";
     }
+    @GetMapping("/login-error")
+    public String viewLoginError(Model model){
+        model.addAttribute("hasErrors", true);
+        return "login";
+    }
 }
